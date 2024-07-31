@@ -15,9 +15,16 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public partial class @PlayerInput: IInputActionCollection2, IDisposable
+/*
+ * This class, PlayerInput, implements IInputActionCollection2 and IDisposable.
+ * It handles player input by utilizing the Unity Input System and is auto-generated from the input actions defined in Assets/Input/PlayerInput.inputactions.
+ */
+public partial class @PlayerInput : IInputActionCollection2, IDisposable
 {
+    // InputActionAsset to store the input actions
     public InputActionAsset asset { get; }
+
+    // Constructor to initialize the PlayerInput and load the input actions from JSON
     public @PlayerInput()
     {
         asset = InputActionAsset.FromJson(@"{
@@ -286,30 +293,36 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_OnFoot_Sprint = m_OnFoot.FindAction("Sprint", throwIfNotFound: true);
     }
 
+    // Dispose method to destroy the asset and release resources
     public void Dispose()
     {
         UnityEngine.Object.Destroy(asset);
     }
 
+    // Property to get or set the binding mask
     public InputBinding? bindingMask
     {
         get => asset.bindingMask;
         set => asset.bindingMask = value;
     }
 
+    // Property to get or set the devices
     public ReadOnlyArray<InputDevice>? devices
     {
         get => asset.devices;
         set => asset.devices = value;
     }
 
+    // Property to get the control schemes
     public ReadOnlyArray<InputControlScheme> controlSchemes => asset.controlSchemes;
 
+    // Method to check if the action is contained within the asset
     public bool Contains(InputAction action)
     {
         return asset.Contains(action);
     }
 
+    // Enumerator to get the input actions
     public IEnumerator<InputAction> GetEnumerator()
     {
         return asset.GetEnumerator();
@@ -320,23 +333,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         return GetEnumerator();
     }
 
+    // Method to enable the asset
     public void Enable()
     {
         asset.Enable();
     }
 
+    // Method to disable the asset
     public void Disable()
     {
         asset.Disable();
     }
 
+    // Property to get the bindings
     public IEnumerable<InputBinding> bindings => asset.bindings;
 
+    // Method to find an action by name or ID
     public InputAction FindAction(string actionNameOrId, bool throwIfNotFound = false)
     {
         return asset.FindAction(actionNameOrId, throwIfNotFound);
     }
 
+    // Method to find a binding by mask and get the action
     public int FindBinding(InputBinding bindingMask, out InputAction action)
     {
         return asset.FindBinding(bindingMask, out action);
@@ -350,6 +368,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_OnFoot_Look;
     private readonly InputAction m_OnFoot_Crouch;
     private readonly InputAction m_OnFoot_Sprint;
+
+    /*
+     * Struct to define the OnFoot actions and provide methods to enable, disable, and set callbacks.
+     */
     public struct OnFootActions
     {
         private @PlayerInput m_Wrapper;
@@ -364,6 +386,11 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
         public static implicit operator InputActionMap(OnFootActions set) { return set.Get(); }
+
+        /*
+         * Method to add callbacks for the OnFoot actions.
+         * It checks if the instance is already added and registers the callbacks for each action.
+         */
         public void AddCallbacks(IOnFootActions instance)
         {
             if (instance == null || m_Wrapper.m_OnFootActionsCallbackInterfaces.Contains(instance)) return;
@@ -385,6 +412,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Sprint.canceled += instance.OnSprint;
         }
 
+        /*
+         * Method to unregister callbacks for an instance.
+         */
         private void UnregisterCallbacks(IOnFootActions instance)
         {
             @Movement.started -= instance.OnMovement;
@@ -404,12 +434,18 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Sprint.canceled -= instance.OnSprint;
         }
 
+        /*
+         * Method to remove callbacks for an instance and clear the callback list.
+         */
         public void RemoveCallbacks(IOnFootActions instance)
         {
             if (m_Wrapper.m_OnFootActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
+        /*
+         * Method to set callbacks for an instance, clearing any existing callbacks.
+         */
         public void SetCallbacks(IOnFootActions instance)
         {
             foreach (var item in m_Wrapper.m_OnFootActionsCallbackInterfaces)
@@ -418,7 +454,13 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             AddCallbacks(instance);
         }
     }
+
+    // Property to get the OnFoot actions
     public OnFootActions @OnFoot => new OnFootActions(this);
+
+    /*
+     * Interface to define the methods for handling OnFoot action events.
+     */
     public interface IOnFootActions
     {
         void OnMovement(InputAction.CallbackContext context);
